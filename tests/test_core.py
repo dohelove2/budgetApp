@@ -2,7 +2,7 @@
 
 import csv
 
-from budget.core import add_transaction, filter_by_category, get_balance
+from budget.core import add_transaction, filter_by_category, get_balance, load_transactions_from_csv
 
 
 def test_add_transaction_increases_length() -> None:
@@ -210,3 +210,26 @@ def test_filter_by_category_returns_independent_list() -> None:
 
     assert len(transactions) == 1
     assert len(result) == 2
+
+
+def test_load_transactions_from_csv_loads_step3_data() -> None:
+    transactions = load_transactions_from_csv("data/step3_transactions.csv")
+
+    assert len(transactions) == 200
+    assert transactions[0]["date"] == "2025-01-02"
+    assert transactions[0]["amount"] == -542738
+    assert transactions[-1]["date"] == "2026-03-29"
+    assert transactions[-1]["amount"] == 489857
+
+
+def test_load_transactions_from_csv_converts_amount_to_int() -> None:
+    transactions = load_transactions_from_csv("data/step3_transactions.csv")
+
+    assert isinstance(transactions[0]["amount"], int)
+    assert isinstance(transactions[-1]["amount"], int)
+
+
+def test_load_transactions_from_csv_preserves_balance() -> None:
+    transactions = load_transactions_from_csv("data/step3_transactions.csv")
+
+    assert get_balance(transactions) == 37151681

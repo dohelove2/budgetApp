@@ -1,5 +1,6 @@
 """Core business logic for the budget CLI app."""
 
+import csv
 from typing import Any, Dict, List
 
 
@@ -33,7 +34,19 @@ def filter_by_category(transactions: List[Dict[str, Any]], category: str) -> Lis
 
 def load_transactions_from_csv(file_path: str) -> List[Dict[str, Any]]:
     """Load transactions from a CSV file."""
-    pass
+    with open(file_path, encoding="utf-8-sig") as file:
+        reader = csv.DictReader(file)
+        return [
+            {
+                "date": row["date"],
+                "type": row["type"],
+                "category": row["category"],
+                "description": row["description"],
+                "amount": int(row["amount"]),
+                "memo": row["memo"],
+            }
+            for row in reader
+        ]
 
 
 def monthly_summary(transactions: List[Dict[str, Any]]) -> Dict[str, Dict[str, int]]:
