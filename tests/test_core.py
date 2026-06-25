@@ -261,3 +261,22 @@ def test_monthly_summary_groups_income_expense_and_net() -> None:
         "expense": -3301374,
         "net": -2811517,
     }
+
+
+def test_monthly_summary_handles_large_step4_data() -> None:
+    transactions = load_transactions_from_csv("data/step4_large_transactions.csv")
+
+    result = monthly_summary(transactions)
+
+    assert len(transactions) == 5000
+    assert len(result) == 78
+    assert result["2020-01"] == {
+        "income": 37502538,
+        "expense": -11873710,
+        "net": 25628828,
+    }
+    assert result["2026-06"] == {
+        "income": 9692304,
+        "expense": -6064940,
+        "net": 3627364,
+    }
