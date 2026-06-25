@@ -212,24 +212,24 @@ def test_filter_by_category_returns_independent_list() -> None:
     assert len(result) == 2
 
 
-def test_load_transactions_from_csv_loads_step3_data() -> None:
-    transactions = load_transactions_from_csv("data/step3_transactions.csv")
+def test_load_transactions_from_csv_loads_step1_data() -> None:
+    transactions = load_transactions_from_csv("data/step1_transactions.csv")
 
-    assert len(transactions) == 200
-    assert transactions[0]["date"] == "2025-01-02"
-    assert transactions[0]["amount"] == -542738
-    assert transactions[-1]["date"] == "2026-03-29"
-    assert transactions[-1]["amount"] == 489857
+    assert len(transactions) == 10
+    assert transactions[0]["date"] == "2026-01-05"
+    assert transactions[0]["amount"] == -12000
+    assert transactions[-1]["date"] == "2026-01-28"
+    assert transactions[-1]["amount"] == 25000
 
 
 def test_load_transactions_from_csv_converts_amount_to_int() -> None:
-    transactions = load_transactions_from_csv("data/step3_transactions.csv")
+    transactions = load_transactions_from_csv("data/step1_transactions.csv")
 
     assert isinstance(transactions[0]["amount"], int)
     assert isinstance(transactions[-1]["amount"], int)
 
 
 def test_load_transactions_from_csv_preserves_balance() -> None:
-    transactions = load_transactions_from_csv("data/step3_transactions.csv")
+    transactions = load_transactions_from_csv("data/step1_transactions.csv")
 
-    assert get_balance(transactions) == 37151681
+    assert get_balance(transactions) == 3366700
