@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>budgetApp</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="bg-orb bg-orb-a"></div>
+    <div class="bg-orb bg-orb-b"></div>
+    <main class="shell">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">CSV 기반 가계부 CLI의 웹 버전</p>
+          <h1>budgetApp</h1>
+          <p class="lead">
+            거래를 추가하고, 카테고리로 걸러보고, 월별 수입·지출을 한 번에
+            확인하세요.
+          </p>
+        </div>
+        <div class="hero-card">
+          <div class="hero-card__label">현재 잔액</div>
+          <div class="hero-card__value" id="balanceValue">0원</div>
+          <div class="hero-card__meta" id="transactionCount">0건의 거래</div>
+        </div>
+      </section>
+
+      <section class="grid">
+        <article class="panel">
+          <div class="panel__header">
+            <h2>거래 추가</h2>
+            <span>CLI와 같은 데이터 구조</span>
+          </div>
+          <form id="transactionForm" class="form">
+            <label>
+              <span>날짜</span>
+              <input name="date" type="date" required />
+            </label>
+            <label>
+              <span>유형</span>
+              <select name="type" required>
+                <option value="지출">지출</option>
+                <option value="수입">수입</option>
+                <option value="기타수입">기타수입</option>
+              </select>
+            </label>
+            <label>
+              <span>카테고리</span>
+              <input name="category" type="text" placeholder="예: 식비" required />
+            </label>
+            <label>
+              <span>설명</span>
+              <input name="description" type="text" placeholder="예: 점심식사" />
+            </label>
+            <label>
+              <span>금액</span>
+              <input
+                name="amount"
+                type="number"
+                placeholder="-12000"
+                required
+              />
+            </label>
+            <label class="form__full">
+              <span>메모</span>
+              <input name="memo" type="text" placeholder="선택 입력" />
+            </label>
+            <div class="form__actions">
+              <button type="submit">추가하기</button>
+              <button type="button" id="loadSeed">샘플 불러오기</button>
+            </div>
+          </form>
+        </article>
+
+        <article class="panel">
+          <div class="panel__header">
+            <h2>카테고리 필터</h2>
+            <span>대소문자 무시</span>
+          </div>
+          <div class="filter">
+            <input
+              id="categoryFilter"
+              type="text"
+              placeholder="예: 식비"
+              aria-label="카테고리 필터"
+            />
+            <button id="clearFilter" type="button">초기화</button>
+          </div>
+          <div class="summary-strip">
+            <div>
+              <span>수입</span>
+              <strong id="incomeValue">0원</strong>
+            </div>
+            <div>
+              <span>지출</span>
+              <strong id="expenseValue">0원</strong>
+            </div>
+            <div>
+              <span>순이익</span>
+              <strong id="netValue">0원</strong>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="panel panel--wide">
+        <div class="panel__header">
+          <h2>거래 목록</h2>
+          <span id="visibleCount">0건 표시 중</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>날짜</th>
+                <th>유형</th>
+                <th>카테고리</th>
+                <th>설명</th>
+                <th>금액</th>
+                <th>메모</th>
+              </tr>
+            </thead>
+            <tbody id="transactionTable"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel panel--wide">
+        <div class="panel__header">
+          <h2>월별 요약</h2>
+          <span>YYYY-MM 기준</span>
+        </div>
+        <div id="monthlySummary" class="months"></div>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
