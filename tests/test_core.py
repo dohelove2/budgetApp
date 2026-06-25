@@ -2,7 +2,13 @@
 
 import csv
 
-from budget.core import add_transaction, filter_by_category, get_balance, load_transactions_from_csv
+from budget.core import (
+    add_transaction,
+    filter_by_category,
+    get_balance,
+    load_transactions_from_csv,
+    monthly_summary,
+)
 
 
 def test_add_transaction_increases_length() -> None:
@@ -233,3 +239,25 @@ def test_load_transactions_from_csv_preserves_balance() -> None:
     transactions = load_transactions_from_csv("data/step1_transactions.csv")
 
     assert get_balance(transactions) == 3366700
+
+
+def test_monthly_summary_groups_income_expense_and_net() -> None:
+    transactions = load_transactions_from_csv("data/step3_transactions.csv")
+
+    result = monthly_summary(transactions)
+
+    assert result["2025-01"] == {
+        "income": 405037,
+        "expense": -2886860,
+        "net": -2481823,
+    }
+    assert result["2025-02"] == {
+        "income": 12940804,
+        "expense": -1832242,
+        "net": 11108562,
+    }
+    assert result["2026-03"] == {
+        "income": 489857,
+        "expense": -3301374,
+        "net": -2811517,
+    }

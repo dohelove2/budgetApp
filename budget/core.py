@@ -1,6 +1,7 @@
 """Core business logic for the budget CLI app."""
 
 import csv
+from collections import defaultdict
 from typing import Any, Dict, List
 
 
@@ -51,4 +52,15 @@ def load_transactions_from_csv(file_path: str) -> List[Dict[str, Any]]:
 
 def monthly_summary(transactions: List[Dict[str, Any]]) -> Dict[str, Dict[str, int]]:
     """Return monthly income, expense, and net summaries."""
-    pass
+    summary: Dict[str, Dict[str, int]] = defaultdict(
+        lambda: {"income": 0, "expense": 0, "net": 0}
+    )
+    for transaction in transactions:
+        month = transaction["date"][:7]
+        amount = transaction["amount"]
+        summary[month]["net"] += amount
+        if amount >= 0:
+            summary[month]["income"] += amount
+        else:
+            summary[month]["expense"] += amount
+    return dict(summary)
