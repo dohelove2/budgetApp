@@ -18,7 +18,7 @@ def add_transaction(transactions: List[Dict[str, Any]], transaction: Dict[str, A
 
 def get_balance(transactions: List[Dict[str, Any]]) -> float:
     """Return the net balance for the given transactions."""
-    pass
+    return float(sum(transaction["amount"] for transaction in transactions))
 
 
 def filter_by_category(transactions: List[Dict[str, Any]], category: str) -> List[Dict[str, Any]]:
