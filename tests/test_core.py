@@ -241,6 +241,41 @@ def test_load_transactions_from_csv_preserves_balance() -> None:
     assert get_balance(transactions) == 3366700
 
 
+def test_load_transactions_from_csv_raises_file_not_found_for_missing_file() -> None:
+    try:
+        load_transactions_from_csv("data/does_not_exist.csv")
+    except FileNotFoundError:
+        assert True
+    else:
+        raise AssertionError("Expected FileNotFoundError")
+
+
+def test_load_transactions_from_csv_raises_value_error_for_bad_amount() -> None:
+    with open("data/step1_transactions.csv", encoding="utf-8-sig") as source:
+        rows = source.read()
+
+    bad_csv_path = "data/_tmp_bad_amount.csv"
+    with open(bad_csv_path, "w", encoding="utf-8-sig") as target:
+        target.write(rows.replace("-12000", "not-a-number", 1))
+
+    try:
+        try:
+            load_transactions_from_csv(bad_csv_path)
+        except ValueError:
+            assert True
+        else:
+            raise AssertionError("Expected ValueError")
+    finally:
+        import os
+
+        if os.path.exists(bad_csv_path):
+            os.remove(bad_csv_path)
+
+
+def test_monthly_summary_returns_empty_dict_for_empty_list() -> None:
+    assert monthly_summary([]) == {}
+
+
 def test_monthly_summary_groups_income_expense_and_net() -> None:
     transactions = load_transactions_from_csv("data/step3_transactions.csv")
 
