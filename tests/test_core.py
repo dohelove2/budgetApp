@@ -2,7 +2,7 @@
 
 import csv
 
-from budget.core import add_transaction, get_balance
+from budget.core import add_transaction, filter_by_category, get_balance
 
 
 def test_add_transaction_increases_length() -> None:
@@ -98,3 +98,115 @@ def test_get_balance_sums_step2_transactions() -> None:
         ]
 
     assert get_balance(transactions) == 24285027
+
+
+def test_filter_by_category_matches_case_insensitively() -> None:
+    transactions = [
+        {
+            "date": "2026-01-04",
+            "type": "지출",
+            "category": "여행",
+            "description": "항공권",
+            "amount": -979796,
+            "memo": "메모_3",
+        },
+        {
+            "date": "2026-01-29",
+            "type": "지출",
+            "category": "식비",
+            "description": "편의점",
+            "amount": -33021,
+            "memo": "",
+        },
+        {
+            "date": "2026-02-24",
+            "type": "수입",
+            "category": "기타수입",
+            "description": "중고 판매",
+            "amount": 199790,
+            "memo": "",
+        },
+    ]
+
+    result = filter_by_category(transactions, "sHoPpInG")
+
+    assert [transaction["category"] for transaction in result] == []
+
+
+def test_filter_by_category_returns_matching_transactions() -> None:
+    transactions = [
+        {
+            "date": "2026-01-04",
+            "type": "지출",
+            "category": "여행",
+            "description": "항공권",
+            "amount": -979796,
+            "memo": "메모_3",
+        },
+        {
+            "date": "2026-01-29",
+            "type": "지출",
+            "category": "식비",
+            "description": "편의점",
+            "amount": -33021,
+            "memo": "",
+        },
+        {
+            "date": "2026-02-24",
+            "type": "수입",
+            "category": "기타수입",
+            "description": "중고 판매",
+            "amount": 199790,
+            "memo": "",
+        },
+    ]
+
+    result = filter_by_category(transactions, "식비")
+
+    assert len(result) == 1
+    assert result[0]["category"] == "식비"
+
+
+def test_filter_by_category_returns_empty_list_for_missing_category() -> None:
+    transactions = [
+        {
+            "date": "2026-01-04",
+            "type": "지출",
+            "category": "여행",
+            "description": "항공권",
+            "amount": -979796,
+            "memo": "메모_3",
+        }
+    ]
+
+    result = filter_by_category(transactions, "없는카테고리")
+
+    assert result == []
+
+
+def test_filter_by_category_returns_independent_list() -> None:
+    transactions = [
+        {
+            "date": "2026-01-29",
+            "type": "지출",
+            "category": "식비",
+            "description": "편의점",
+            "amount": -33021,
+            "memo": "",
+        }
+    ]
+
+    result = filter_by_category(transactions, "식비")
+    result.append(
+        {
+            "date": "2026-02-01",
+            "type": "지출",
+            "category": "식비",
+            "description": "추가",
+            "amount": -1000,
+            "memo": "",
+        }
+    )
+
+    assert len(transactions) == 1
+    assert len(result) == 2
