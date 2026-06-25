@@ -5,7 +5,15 @@ from typing import Any, Dict, List
 
 def add_transaction(transactions: List[Dict[str, Any]], transaction: Dict[str, Any]) -> List[Dict[str, Any]]:
     """Add a transaction to the list and return the updated list."""
-    pass
+    normalized_transaction = {
+        "date": transaction["date"],
+        "type": transaction["type"],
+        "category": transaction["category"],
+        "description": transaction["description"],
+        "amount": transaction["amount"],
+        "memo": transaction["memo"],
+    }
+    return transactions + [normalized_transaction]
 
 
 def get_balance(transactions: List[Dict[str, Any]]) -> float:
@@ -26,4 +34,3 @@ def load_transactions_from_csv(file_path: str) -> List[Dict[str, Any]]:
 def monthly_summary(transactions: List[Dict[str, Any]]) -> Dict[str, Dict[str, int]]:
     """Return monthly income, expense, and net summaries."""
     pass
-
