@@ -48,10 +48,12 @@ const seedTransactions = [
 
 const form = document.getElementById("transactionForm");
 const tableBody = document.getElementById("transactionTable");
-const monthlySummary = document.getElementById("monthlySummary");
+const monthlySummaryEl = document.getElementById("monthlySummary");
 const categoryFilter = document.getElementById("categoryFilter");
 const clearFilter = document.getElementById("clearFilter");
 const loadSeed = document.getElementById("loadSeed");
+const loadStep1 = document.getElementById("loadStep1");
+const loadStep3 = document.getElementById("loadStep3");
 const balanceValue = document.getElementById("balanceValue");
 const incomeValue = document.getElementById("incomeValue");
 const expenseValue = document.getElementById("expenseValue");
@@ -61,6 +63,26 @@ const visibleCount = document.getElementById("visibleCount");
 
 function formatMoney(value) {
   return new Intl.NumberFormat("ko-KR").format(value) + "원";
+}
+
+function parseCsv(text) {
+  const lines = text.replace(/^\uFEFF/, "").trim().split("\n");
+  const headers = lines[0].split(",");
+  return lines.slice(1).filter(Boolean).map((line) => {
+    const values = line.split(",");
+    const row = {};
+    headers.forEach((header, index) => {
+      row[header] = values[index] ?? "";
+    });
+    return {
+      date: row.date,
+      type: row.type,
+      category: row.category,
+      description: row.description,
+      amount: Number(row.amount),
+      memo: row.memo,
+    };
+  });
 }
 
 function addTransaction(transactions, transaction) {
@@ -107,6 +129,15 @@ function monthlySummary(transactions) {
   return summary;
 }
 
+async function loadSampleCsv(path) {
+  const response = await fetch(path);
+  const text = await response.text();
+  state.transactions = parseCsv(text);
+  state.filter = "";
+  categoryFilter.value = "";
+  render();
+}
+
 function render() {
   const filtered = filterByCategory(state.transactions, state.filter);
   const balance = getBalance(state.transactions);
@@ -143,7 +174,7 @@ function render() {
     .join("");
 
   const sortedMonths = Object.keys(summary).sort();
-  monthlySummary.innerHTML = sortedMonths
+  monthlySummaryEl.innerHTML = sortedMonths
     .map(
       (month) => `
         <article class="months__item">
@@ -189,7 +220,23 @@ clearFilter.addEventListener("click", () => {
 
 loadSeed.addEventListener("click", () => {
   state.transactions = seedTransactions.slice();
+  state.filter = "";
+  categoryFilter.value = "";
   render();
+});
+
+loadStep1.addEventListener("click", () => {
+  loadSampleCsv("../data/step1_transactions.csv").catch(() => {
+    state.transactions = seedTransactions.slice();
+    render();
+  });
+});
+
+loadStep3.addEventListener("click", () => {
+  loadSampleCsv("../data/step3_transactions.csv").catch(() => {
+    state.transactions = seedTransactions.slice();
+    render();
+  });
 });
 
 state.transactions = seedTransactions.slice();
